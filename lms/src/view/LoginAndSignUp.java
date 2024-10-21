@@ -106,7 +106,7 @@ public class LoginAndSignUp {
                         }
                         case 2 -> {
                             InstructorDashboard instructorDashboard = new InstructorDashboard();
-                            
+                            instructorDashboard.mainInstructorView();
                         }
                         case 3 -> {
                         	InstructorDashboard instructorDashboard = new InstructorDashboard();

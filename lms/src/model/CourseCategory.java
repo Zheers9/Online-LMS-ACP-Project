@@ -27,6 +27,10 @@ public class CourseCategory{
 		scanner  = new Scanner(System.in);
 	}
 	
+	public static String[] cateList() {
+		return categories;
+	}
+	
 	public static void Category() {
 		
         System.out.println("| Category:");

@@ -1,19 +1,33 @@
 package view;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
+import control.CourseOps;
+import control.DatabaseOperations;
+import model.AccInfromation;
+import model.CourseInfo;
+import model.EditAcc;
+import model.ManageCourses;
+import model.SessionManager;
 import model.myAccount;
 
 public class InstructorDashboard {
+    static DatabaseOperations DBOps =  new DatabaseOperations();
+
+	static String name = DBOps.getColumnById("Name",SessionManager.getInstance().getUserId());
 	static final String LIGHT_BLUE = "\u001B[36m"; // ANSI code for light blue
     static final String RESET_COLOR = "\u001B[0m";
     static Scanner scanner;
+    static String lightBlue = "\u001B[36m"; // ANSI code for light blue
+    static String resetColor = "\u001B[0m";
+   
     public InstructorDashboard() {
     	scanner = new Scanner(System.in);
     }
     
-    public static void mainStudentView() {
+    public static void mainInstructorView() {
         System.out.println("\n| Online Learning Management System |");
         displayMenuOptions();
         
@@ -56,11 +70,12 @@ public class InstructorDashboard {
     	myAccount acc = new myAccount();
         switch (choice) {
             case 1 -> {
-                acc.myAccountPage();
+            	acc.myAccountPage();
                 return true;
             }
             case 2 -> {
-                
+            	ManageCourses manage = new ManageCourses();
+            	manage.view();
                 return true;
             }
             case 3 -> {
@@ -77,4 +92,11 @@ public class InstructorDashboard {
             }
         }
     }
+    
+    
+    
+    
+    
+    
+
 }
