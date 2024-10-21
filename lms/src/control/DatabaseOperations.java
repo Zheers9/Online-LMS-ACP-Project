@@ -92,6 +92,33 @@ public class DatabaseOperations {
         return false; // Return false if no record found or an exception occurs
     }
 	
+    public boolean checkPassword(String password) {
+    	String query = "SELECT password FROM user WHERE user_ID  = ?";
+    	
+    	
+    	
+    	try (Connection conn = getConnection(); // Assume getConnection() method exists to establish a DB connection
+    			PreparedStatement pstmt = conn.prepareStatement(query)) {
+    		
+    		pstmt.setInt(1, SessionManager.getInstance().getUserId());
+    		ResultSet rs = pstmt.executeQuery();
+    		
+    		if (rs.next()) { // If a record is found
+    			String storedHashedPassword = rs.getString("password"); // Get the stored hashed password
+    			
+    			String hashedInputPassword = hashPassword(password); // Hash the input password
+    			
+    		
+    			// Compare the hashed passwords
+    			return storedHashedPassword.equals(hashedInputPassword);
+    			
+    		}
+    	} catch (SQLException e) {
+    		e.printStackTrace(); // Handle exceptions appropriately in production code
+    	}
+    	return false; // Return false if no record found or an exception occurs
+    }
+    
     
     // Method to hash the password using SHA-256
     public static String hashPassword(String password) {
@@ -233,6 +260,48 @@ public class DatabaseOperations {
 
          
     }
+    
+    public boolean updateString(String column,String newData, int userId) {
+        String query = "UPDATE user SET " + column + " = ? WHERE user_ID = ?";
+        
+
+        try (Connection conn = getConnection(); 
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            
+            pstmt.setString(1, newData);      
+            pstmt.setInt(2, userId);      // Set the user ID
+
+            int rowsAffected = pstmt.executeUpdate();  // Execute update query
+
+            return rowsAffected > 0;  // Return true if update was successful
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;  // Return false if an exception occurs
+    }
+    
+    public boolean isEmailTaken(String email) {
+        String query = "SELECT COUNT(*) FROM user WHERE email = ?";
+
+        try (Connection conn = getConnection(); 
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, email);  // Set the email to check
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    int count = rs.getInt(1);  // Get the count of records
+                    return count > 0;  // Return true if email is taken (count > 0)
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;  // Return false if no records were found or an exception occurs
+    }
+
+
     
     public static Connection getConnection() throws SQLException {
 

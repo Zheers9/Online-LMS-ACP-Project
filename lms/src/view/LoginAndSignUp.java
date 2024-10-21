@@ -130,7 +130,7 @@ public class LoginAndSignUp {
     }
 
     private void createAcc(int role) {
-    	System.out.print("Enter your name: ");
+    	
     	Scanner scanner = new Scanner(System.in);
         String name, email, pass, field;
 

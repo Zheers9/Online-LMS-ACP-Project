@@ -7,6 +7,7 @@ import java.util.Scanner;
 import control.CourseOps;
 import control.DatabaseOperations;
 import view.MainDashboard;
+import view.StudentDashboard;
 
 public class myAccount {
 	static String lightBlue = "\u001B[36m"; // ANSI code for light blue
@@ -27,16 +28,17 @@ public class myAccount {
 		System.out.println(lightBlue + "1" + resetColor +"| My infromation ");
 		System.out.println(lightBlue + "2" + resetColor +"| Credit ");
 		System.out.println(lightBlue + "3" + resetColor +"| Notification ");
+		System.out.println(lightBlue + "4" + resetColor +"| <- Return ");
 		
 		boolean isValidChoice = false;
 		while (!isValidChoice) {
-            System.out.print("Enter your choice (1-7): ");
+            System.out.print("Enter your choice (1-4): ");
             Optional<Integer> choice = getUserInput();
 
             if (choice.isPresent()) {
                 isValidChoice = handleChoice(choice.get());
             } else {
-                System.out.println("Invalid input. Please enter a number between 1 and 7.");
+                System.out.println("Invalid input. Please enter a number between 1 and 4.");
             }
         }
 		
@@ -60,6 +62,7 @@ public class myAccount {
             case 1 -> {
             	DB.getUserInfo(SessionManager.getInstance().getUserId());
                 acc.InfoShow();
+                acc.editAcc();
                 return true;
             }
             case 2 -> {
@@ -70,9 +73,14 @@ public class myAccount {
                 
                 return true;
             }
+            case 4 -> {
+            	StudentDashboard studntView = new StudentDashboard();
+            	studntView.mainStudentView();
+            	return true;
+            }
             
             default -> {
-                System.out.println("Invalid choice, please select between 1 and 7.");
+                System.out.println("Invalid choice, please select between 1 and 4.");
                 return false;
             }
         }

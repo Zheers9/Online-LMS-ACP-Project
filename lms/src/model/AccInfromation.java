@@ -1,6 +1,12 @@
 package model;
 
+import java.util.Optional;
+import java.util.Scanner;
+
+import control.DatabaseOperations;
+
 public class AccInfromation {
+	static Scanner scanner;
 	private static String name;
 	private static String email;
 	private static String field;
@@ -28,7 +34,76 @@ public class AccInfromation {
         
        
 	}
+	
+	public static void editAcc() {
+		
+		
+		boolean isValidChoice = false;
+		while (!isValidChoice) {
+            System.out.print("Do you want edit your infromations? y/n: ");
+            Optional<String> choice = getUserInput();
 
+            if (choice.isPresent()) {
+                isValidChoice = handleChoice(choice.get());
+            } else {
+                System.out.println("Invalid input. Please enter y or n.");
+            }
+        }
+	}
+	
+	private static Optional<String> getUserInput() {
+		scanner = new Scanner(System.in);
+        try {
+            String choice = scanner.nextLine();
+            return Optional.of(choice);
+        } catch (Exception e) {
+            scanner.next(); // Clear invalid input
+            return Optional.empty();
+        }
+    }
+
+    private static boolean handleChoice(String choice) {
+    	DatabaseOperations DB =  new DatabaseOperations();
+    	
+    	AccInfromation acc =  new AccInfromation();
+    	myAccount myAcc =  new myAccount();
+    	
+        switch (choice) {
+            case "y" -> {
+            	checkpass();
+                return true;
+            }
+            case "n" -> {
+            	myAcc.myAccountPage();
+                return true;
+            }
+            
+            default -> {
+                System.out.println("Invalid choice, please select y/n.");
+                return false;
+            }
+        }
+    }
+
+    public static void checkpass() {
+    	boolean isCorrect = false;
+    	EditAcc edit = new EditAcc();
+		while (!isCorrect) {
+            System.out.print("Enter your password: ");
+            String pass = scanner.nextLine();
+            DatabaseOperations DB = new DatabaseOperations();
+
+            if (DB.checkPassword(pass)) {
+                isCorrect = true;
+                edit.EditAccountPage();
+            } else {
+                System.out.println("Invalid password.");
+                editAcc();
+            }
+        }
+		
+		
+    }
     // Getters
     public String getName() {
     	return name;
@@ -47,6 +122,8 @@ public class AccInfromation {
     public String getRole() {
     	return role;
     }
+    
+    
 
     
 }
