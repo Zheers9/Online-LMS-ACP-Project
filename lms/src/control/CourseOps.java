@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.CourseInfo;
+import model.SessionManager;
 
 public class CourseOps {
     // Method to retrieve the five newest courses
@@ -72,6 +73,36 @@ public class CourseOps {
         try (Connection conn = DatabaseOperations.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
              
+            // Set the category name parameter in the prepared statement
+            
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                // Iterate through the result set and add courses to the list
+                while (rs.next()) {
+                    
+                    int id = rs.getInt("Course_ID");
+                    String title = rs.getString("Title");
+                    String description = rs.getString("Description");
+                    int credit = rs.getInt("Credit");
+                    String categoryName = rs.getString("Catagory_Name");
+                    
+                    courses.add(new CourseInfo(id,title, description, credit, categoryName));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle the exception appropriately
+        }
+        
+        return courses; // Return the list of courses
+    }
+    
+    public static List<CourseInfo> getCoursesInstructor() {
+        List<CourseInfo> courses = new ArrayList<>();
+        String query = "SELECT Course_ID, Title, description, Credit, Catagory_Name FROM course WHERE user_ID = ? LIMIT 10";
+        
+        try (Connection conn = DatabaseOperations.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+        	 pstmt.setInt(1, SessionManager.getInstance().getUserId());
             // Set the category name parameter in the prepared statement
             
 

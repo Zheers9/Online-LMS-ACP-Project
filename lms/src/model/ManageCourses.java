@@ -1,48 +1,37 @@
-package view;
+package model;
 
 import java.util.Optional;
 import java.util.Scanner;
 
-import model.myAccount;
+import view.MainDashboard;
 
-public class InstructorDashboard {
+public class ManageCourses {
+	static Scanner scanner;
 	static final String LIGHT_BLUE = "\u001B[36m"; // ANSI code for light blue
     static final String RESET_COLOR = "\u001B[0m";
-    static Scanner scanner;
-    public InstructorDashboard() {
-    	scanner = new Scanner(System.in);
-    }
     
-    public static void mainStudentView() {
-        System.out.println("\n| Online Learning Management System |");
-        displayMenuOptions();
-        
-        MainDashboard mainDashboard = new MainDashboard();
-        mainDashboard.MainView();
-
+	public ManageCourses() {
+		scanner = new Scanner(System.in);// TODO Auto-generated constructor stub
+	}
+	
+	public static void view() {
+		System.out.println(LIGHT_BLUE + "1" + RESET_COLOR + "| 👤My courses");
+        System.out.println(LIGHT_BLUE + "2" + RESET_COLOR + "| Upload Courses");
         boolean isValidChoice = false;
-
         // Loop until the user makes a valid choice
         while (!isValidChoice) {
-            System.out.print("Enter your choice (1-7): ");
+            System.out.print("Enter your choice (1-2): ");
             Optional<Integer> choice = getUserInput();
 
             if (choice.isPresent()) {
-                isValidChoice = handleChoice(choice.get(), mainDashboard);
+                isValidChoice = handleChoice(choice.get());
             } else {
-                System.out.println("Invalid input. Please enter a number between 1 and 7.");
+                System.out.println("Invalid input. Please enter a number between 1,2.");
             }
         }
-    }
-
-    private static void displayMenuOptions() {
-        System.out.println(LIGHT_BLUE + "1" + RESET_COLOR + "| 👤My Account");
-        System.out.println(LIGHT_BLUE + "2" + RESET_COLOR + "| Manage Courses");
-        
-        
-    }
-
-    private static Optional<Integer> getUserInput() {
+	}
+	
+	private static Optional<Integer> getUserInput() {
         try {
             int choice = scanner.nextInt();
             return Optional.of(choice);
@@ -52,7 +41,7 @@ public class InstructorDashboard {
         }
     }
 
-    private static boolean handleChoice(int choice, MainDashboard mainDashboard) {
+    private static boolean handleChoice(int choice) {
     	myAccount acc = new myAccount();
         switch (choice) {
             case 1 -> {
@@ -68,7 +57,7 @@ public class InstructorDashboard {
                 return true;
             }
             case 4, 5, 6, 7 -> {
-                mainDashboard.choice(choice);
+                
                 return true;
             }
             default -> {
@@ -77,4 +66,9 @@ public class InstructorDashboard {
             }
         }
     }
+    
+    public static void myCourse() {
+    	
+    }
+	
 }

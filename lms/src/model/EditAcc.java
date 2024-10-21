@@ -12,7 +12,7 @@ public class EditAcc {
 	static String lightBlue = "\u001B[36m"; // ANSI code for light blue
     static String resetColor = "\u001B[0m";
     static DatabaseOperations DBOps =  new DatabaseOperations();
-	static String name = DBOps.getUserNameById(SessionManager.getInstance().getUserId());// get username by id
+	static String name = DBOps.getColumnById("Name",SessionManager.getInstance().getUserId());// get username by id
     static Scanner scanner;
     
     public EditAcc() {
@@ -66,8 +66,12 @@ public class EditAcc {
                 return true;
             }
             case 3 -> {
-                
+            	changePass();
                 return true;
+            }
+            case 4 -> {
+            	chanegField();
+            	return true;
             }
             
             default -> {
@@ -85,7 +89,7 @@ public class EditAcc {
         
         // Get the user's current name
         int userId = SessionManager.getInstance().getUserId();
-        String currentName = DBOps.getUserNameById(userId);
+        String currentName = DBOps.getColumnById("name",userId);
         
         while (!isNameChanged) {
             System.out.println("Your current name is: " + currentName);
@@ -101,7 +105,7 @@ public class EditAcc {
                 
                 if (isUpdated) {
                     // If update is successful, fetch the updated name
-                    currentName = DBOps.getUserNameById(userId);
+                    currentName = DBOps.getColumnById("name",userId);
                     System.out.println("\nYour name has been changed to: " + currentName);
                     isNameChanged = true;
                 } else {
@@ -126,10 +130,10 @@ public class EditAcc {
         
         // Get the user's current name
         int userId = SessionManager.getInstance().getUserId();
-        String currentName = DBOps.getUserNameById(userId);
+        String currentEmail = DBOps.getColumnById("email",userId);
         
         while (!isNameChanged) {
-            System.out.println("Your current email is: " + currentName);
+            System.out.println("Your current email is: " + currentEmail);
             System.out.print("Enter your new email: ");
             
             // Capture the new name from the user
@@ -142,8 +146,8 @@ public class EditAcc {
                     
                     if (isUpdated) {
                         // If update is successful, fetch the updated name
-                        currentName = DBOps.getUserNameById(userId);
-                        System.out.println("\nYour email has been changed to: " + currentName);
+                        currentEmail = DBOps.getColumnById("email",userId);
+                        System.out.println("\nYour email has been changed to: " + currentEmail);
                         isNameChanged = true;
                     } else {
                         System.out.println("An error occurred while updating your name. Please try again.");
@@ -163,11 +167,75 @@ public class EditAcc {
         acc.InfoShow();
         acc.editAcc();
     }
-    public static void chanegPass() {
-    	
+    public static void changePass() {
+        while (true) {
+            System.out.print("Enter your password: ");
+            String NewPass = scanner.nextLine();
+
+            // Check if the password meets the required criteria
+            if (NewPass.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")) {
+
+                // Check if the new password is different from the old password
+                if (!DBOps.isEqual(NewPass)) {
+
+                    // Try changing the password and give feedback
+                    if (DBOps.ChangePass(NewPass)) {
+                        System.out.println("Password changed successfully!");
+                    } else {
+                        System.out.println("Password not changed, try again.");
+                    }
+                    
+                    break;  // Exit the loop after a successful change or failed attempt
+
+                } else {
+                    System.out.println("This is your old password. Please enter a different one.");
+                }
+
+            } else {
+                // Password doesn't meet the criteria
+                System.out.println("Invalid password. It must contain at least 8 characters, one letter, one number, and one special character.");
+            }
+        }
     }
+
     public static void chanegField() {
-    	
+    	boolean isNameChanged = false;
+        Scanner scanner = new Scanner(System.in);
+        
+        // Get the user's current name
+        int userId = SessionManager.getInstance().getUserId();
+        String currentField = DBOps.getColumnById("field",userId);
+        
+        while (!isNameChanged) {
+            System.out.println("Your current field is: " + currentField);
+            System.out.print("Enter your new field: ");
+            
+            // Capture the new name from the user
+            String newName = scanner.nextLine();
+            
+            // Validate the new name (only letters and spaces allowed)
+            if (newName.matches("[a-zA-Z ]+")) {
+                // Update the name in the database
+                boolean isUpdated = DBOps.updateString("field",newName, userId);
+                
+                if (isUpdated) {
+                    // If update is successful, fetch the updated name
+                	currentField = DBOps.getColumnById("field",userId);
+                    System.out.println("\nYour field has been changed to: " + currentField);
+                    isNameChanged = true;
+                } else {
+                    System.out.println("An error occurred while updating your name. Please try again.");
+                }
+            } else {
+                // Inform the user about invalid input
+                System.out.println("Invalid name. Please enter a name containing only letters and spaces.");
+            }
+        }
+        
+        AccInfromation acc = new AccInfromation();
+        DBOps.getUserInfo(SessionManager.getInstance().getUserId());
+        acc.InfoShow();
+        acc.editAcc();
     }
 	
 }

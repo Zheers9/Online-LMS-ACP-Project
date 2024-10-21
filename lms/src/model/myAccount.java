@@ -14,6 +14,7 @@ public class myAccount {
     static String resetColor = "\u001B[0m";
     static String name;
     static Scanner scanner;
+    static AccInfromation AccInfo;
     
     public myAccount() {
     	scanner = new Scanner(System.in);
@@ -21,7 +22,7 @@ public class myAccount {
 	public static void myAccountPage() {
 		DatabaseOperations DBOps =  new DatabaseOperations();
 		 
-		String name = DBOps.getUserNameById(SessionManager.getInstance().getUserId());// get username by id
+		name = DBOps.getColumnById("Name",SessionManager.getInstance().getUserId());// get username by id
 		
 		System.out.println("\n👤Welecom, " + name);
 

@@ -168,7 +168,7 @@ public class DatabaseOperations {
     
     public static boolean signup(String name, String email, String password, String field, int role) {
         String sql = "INSERT INTO user (name, email, password, field, role) VALUES (?, ?, ?, ?, ?)";
-        
+
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -186,21 +186,19 @@ public class DatabaseOperations {
             int rowsAffected = pstmt.executeUpdate();
 
             // Check if the insertion was successful
-            if (rowsAffected > 0) {
-                return true;
-            }
+            return rowsAffected > 0;  // Return true if at least one row was affected
 
         } catch (SQLException e) {
             // Handle any SQL exceptions
-            return false;
+            e.printStackTrace();  // Log the error message (optional, for debugging)
+            return false;  // Return false if there's an exception
         }
-
-        return false;
     }
+
     
-    public String getUserNameById(int userId) {
+    public String getColumnById(String column,int userId) {
         String userName = null;
-        String query = "SELECT name FROM user WHERE user_ID = ?";  // SQL query to fetch name by user ID
+        String query = "SELECT " + column + " FROM user WHERE user_ID = ?";  // SQL query to fetch a column value by user ID
         
         try (Connection conn = getConnection();  // Assuming you have a method to get the DB connection
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -209,7 +207,7 @@ public class DatabaseOperations {
 
             try (ResultSet rs = pstmt.executeQuery()) {  // Execute the query
                 if (rs.next()) {
-                    userName = rs.getString("name");  // Retrieve the name from the result set
+                    userName = rs.getString(column);  // Retrieve the name from the result set
                 }
             }
 
@@ -300,6 +298,55 @@ public class DatabaseOperations {
         }
         return false;  // Return false if no records were found or an exception occurs
     }
+    
+    public static Boolean isEqual(String Compare) {
+    	String query = "SELECT password FROM user WHERE user_ID = ?";
+        try (Connection conn = getConnection(); 
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+        	 pstmt.setInt(1, SessionManager.getInstance().getUserId()); 
+           
+        	String hashedPassword = hashPassword(Compare);
+            try (ResultSet rs = pstmt.executeQuery()) {
+            	if (rs.next()) {
+                    String dbPassword = rs.getString("password");  // Get the password from the database
+                    
+                    // Compare the passwords
+                    if (dbPassword.equals(hashedPassword)) {
+                    	return true; 
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    public Boolean ChangePass(String NewPass) {
+        String query = "UPDATE user SET password = ? WHERE user_ID = ?";
+        boolean isPasswordChanged = false;
+
+        try (Connection conn = getConnection();  // Assuming you have a method to get the DB connection
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            String hashedPassword = hashPassword(NewPass);  // Hash the new password
+            pstmt.setString(1, hashedPassword); 
+            pstmt.setInt(2, SessionManager.getInstance().getUserId());  // Set the user ID in the query
+
+            int rowsUpdated = pstmt.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                isPasswordChanged = true;  // Password successfully changed
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();  // Handle SQL exceptions
+        }
+
+        // Return the correct result
+        return isPasswordChanged;
+    }
+
 
 
     

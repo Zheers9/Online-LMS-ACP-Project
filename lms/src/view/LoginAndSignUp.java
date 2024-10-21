@@ -106,11 +106,11 @@ public class LoginAndSignUp {
                         }
                         case 2 -> {
                             InstructorDashboard instructorDashboard = new InstructorDashboard();
-                            instructorDashboard.test();
+                            
                         }
                         case 3 -> {
                         	InstructorDashboard instructorDashboard = new InstructorDashboard();
-                            instructorDashboard.test();
+                            
                         }
                         default -> System.out.println("Invalid user ID.");
                     }
@@ -188,12 +188,12 @@ public class LoginAndSignUp {
                     studentDashboard.mainStudentView();
                 }
                 case 2 -> {
-                    InstructorDashboard instructorDashboard = new InstructorDashboard();
-                    instructorDashboard.test();
+                	StudentDashboard studentDashboard = new StudentDashboard();
+                    studentDashboard.mainStudentView();
                 }
                 case 3 -> {
                     InstructorDashboard instructorDashboard = new InstructorDashboard();
-                    instructorDashboard.test();
+                   
                 }
                 default -> System.out.println("Invalid user role.");
             }
