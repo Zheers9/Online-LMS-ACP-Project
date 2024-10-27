@@ -1,5 +1,6 @@
 package model;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -19,7 +20,7 @@ public class myAccount {
     public myAccount() {
     	scanner = new Scanner(System.in);
     }
-	public static void myAccountPage() {
+	public static void myAccountPage() throws SQLException {
 		DatabaseOperations DBOps =  new DatabaseOperations();
 		 
 		name = DBOps.getColumnById("Name",SessionManager.getInstance().getUserId());// get username by id
@@ -54,7 +55,7 @@ public class myAccount {
         }
     }
 
-    private static boolean handleChoice(int choice) {
+    private static boolean handleChoice(int choice) throws SQLException {
     	DatabaseOperations DB =  new DatabaseOperations();
     	
     	AccInfromation acc =  new AccInfromation();

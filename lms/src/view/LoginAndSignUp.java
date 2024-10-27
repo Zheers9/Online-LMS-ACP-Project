@@ -56,7 +56,7 @@ public class LoginAndSignUp {
         }
     }
     
-    private void createAccount() {
+    private void createAccount() throws SQLException {
     	String getInfo="""
     			Select your role:
     			1. Student
@@ -102,11 +102,21 @@ public class LoginAndSignUp {
                     switch (id) {
                         case 1 -> {
                             StudentDashboard studentDashboard = new StudentDashboard();
-                            studentDashboard.mainStudentView();
+                            try {
+								studentDashboard.mainStudentView();
+							} catch (SQLException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
                         }
                         case 2 -> {
                             InstructorDashboard instructorDashboard = new InstructorDashboard();
-                            instructorDashboard.mainInstructorView();
+                            try {
+								instructorDashboard.mainInstructorView();
+							} catch (SQLException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
                         }
                         case 3 -> {
                         	InstructorDashboard instructorDashboard = new InstructorDashboard();
@@ -129,7 +139,7 @@ public class LoginAndSignUp {
         
     }
 
-    private void createAcc(int role) {
+    private void createAcc(int role) throws SQLException {
     	
     	Scanner scanner = new Scanner(System.in);
         String name, email, pass, field;
@@ -178,7 +188,7 @@ public class LoginAndSignUp {
             }
         }
         
-        scanner.close();
+        
         
         DatabaseOperations set =  new DatabaseOperations();
         if (set.signup(name, email, pass, field, role)) {

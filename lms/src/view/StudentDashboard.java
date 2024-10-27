@@ -1,5 +1,6 @@
 package view;
 
+import java.sql.SQLException;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -15,7 +16,7 @@ public class StudentDashboard {
     	scanner = new Scanner(System.in);
     }
     
-    public static void mainStudentView() {
+    public static void mainStudentView() throws SQLException {
         System.out.println("\n| Online Learning Management System |");
         displayMenuOptions();
         
@@ -54,7 +55,7 @@ public class StudentDashboard {
         }
     }
 
-    private static boolean handleChoice(int choice, MainDashboard mainDashboard) {
+    private static boolean handleChoice(int choice, MainDashboard mainDashboard) throws SQLException {
     	myAccount acc = new myAccount();
         switch (choice) {
             case 1 -> {
