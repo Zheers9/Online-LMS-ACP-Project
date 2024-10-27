@@ -2,6 +2,7 @@ package view;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 import control.CourseOps;
@@ -10,12 +11,14 @@ import model.CateShow;
 import model.CourseCategory;
 import model.CourseInfo;
 import model.SessionManager;
+import model.coursePage;
 
 public class MainDashboard {
 	private static Scanner scanner;
 	static String lightBlue = "\u001B[36m"; // ANSI code for light blue
     static String resetColor = "\u001B[0m";
     static DatabaseOperations DB;
+    static int userId = SessionManager.getInstance().getUserId();
 	
 	public MainDashboard() {
 		scanner = new Scanner(System.in);
@@ -42,28 +45,13 @@ public class MainDashboard {
 	        case 4 -> {
 	        	for (CourseInfo CourseInfo : latestCourses) {
 	                System.out.println(CourseInfo);
-	                
 	            }
-	        	System.out.print("\n<- return ?: ");
-	    		Scanner scanner = new Scanner(System.in);
-	    		String y = scanner.next();
-	    		int userId = SessionManager.getInstance().getUserId();
-	    		if(y.equalsIgnoreCase("y")) {
-	    			if(DB.getRoleByID(userId) == 1) {
-	    				StudentDashboard view = new StudentDashboard();
-		    			view.mainStudentView();
-	    			}else {
-	    				InstructorDashboard view = new InstructorDashboard();
-		    			view.mainInstructorView();
-	    			}
-	    			StudentDashboard view = new StudentDashboard();
-	    			view.mainStudentView();
-	    		}
-	        	valid = true;
+	        	courseChoice();
+	        	
 	        }
 	        case 5 -> {
 	        	Category.Category();
-	        	valid = true;
+	        	courseChoice();
 	        }
 	        case 6 -> {
 	        	CateShow.show("ALL");
@@ -79,4 +67,67 @@ public class MainDashboard {
 	
   
 	}
+	
+	public static void returnBack() throws SQLException {
+		System.out.print("\n<- return ?: ");
+		Scanner scanner = new Scanner(System.in);
+		String y = scanner.next();
+		userId = SessionManager.getInstance().getUserId();
+		if(y.equalsIgnoreCase("y")) {
+			if(DB.getRoleByID(userId) == 1) {
+				StudentDashboard view = new StudentDashboard();
+    			view.mainStudentView();
+			}else {
+				InstructorDashboard view = new InstructorDashboard();
+    			view.mainInstructorView();
+			}
+			StudentDashboard view = new StudentDashboard();
+			view.mainStudentView();
+		}
+    	
+	}
+	
+	public static void courseChoice() throws SQLException {
+        boolean isValidChoice = false;
+        while (!isValidChoice) {
+            System.out.print("Choose course by ID: ");
+            Optional<Integer> choice = getUserInput();
+
+            if (choice.isPresent()) {
+                isValidChoice = handleChoice(choice.get());
+            } else {
+                System.out.println("Invalid input. Please enter a Course ID.");
+            }
+        }
+    }
+
+    private static Optional<Integer> getUserInput() {
+        try {
+            return Optional.of(scanner.nextInt());
+        } catch (Exception e) {
+            scanner.next(); // Clear invalid input
+            return Optional.empty();
+        }
+    }
+
+    private static boolean handleChoice(int choice) throws SQLException {
+    	if(choice == 0 ) {
+    		if(DB.getRoleByID(userId) == 1) {
+				StudentDashboard view = new StudentDashboard();
+    			view.mainStudentView();
+			}else {
+				InstructorDashboard view = new InstructorDashboard();
+    			view.mainInstructorView();
+			}
+			StudentDashboard view = new StudentDashboard();
+			view.mainStudentView();
+    	}else {
+    		coursePage course = new coursePage(choice);  // Assuming CoursePage has a constructor that takes choice as an argument
+            course.view(choice);  // Assuming view method in CoursePage accepts an argument
+            
+    	}
+    	return true;
+    		
+        
+    }
 }

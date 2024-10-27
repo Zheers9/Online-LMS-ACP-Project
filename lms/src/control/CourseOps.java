@@ -11,6 +11,7 @@ import java.util.List;
 
 import model.CourseInfo;
 import model.SessionManager;
+import model.coursePage;
 
 public class CourseOps {
     // Method to retrieve the five newest courses
@@ -96,6 +97,36 @@ public class CourseOps {
         }
         
         return courses; // Return the list of courses
+    }
+    
+    public static boolean getCourseInfo(int id) {
+        
+        String query = "SELECT Course_ID, Title, description, Credit, Catagory_Name FROM course WHERE Course_ID = ?";
+        
+        try (Connection conn = DatabaseOperations.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+             
+            // Set the category name parameter in the prepared statement
+        	pstmt.setInt(1, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                // Iterate through the result set and add courses to the list
+                while (rs.next()) {
+                    String title = rs.getString("Title");
+                    String description = rs.getString("Description");
+                    int credit = rs.getInt("Credit");
+                    String categoryName = rs.getString("Catagory_Name");
+                    coursePage course = new coursePage(id);
+                    course.CourseInfo(title, description, credit, categoryName);
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle the exception appropriately
+            return false;
+        }
+        
+        return false; 
     }
     
     public static List<CourseInfo> getCoursesInstructor() {
@@ -195,6 +226,48 @@ public class CourseOps {
         }
 
         return exists; // Return true if course ID exists for the user, false otherwise
+    }
+    
+    public static boolean isStudentEnroll(int userId, int courseId) {
+    	String query = "SELECT COUNT(*) FROM enroll WHERE student_ID = ? AND course_ID = ?";
+    	boolean exists = false;
+    	
+    	try (Connection conn = DatabaseOperations.getConnection();
+    			PreparedStatement pstmt = conn.prepareStatement(query)) {
+    		
+    		pstmt.setInt(1, userId);   // Set user ID
+    		pstmt.setInt(2, courseId);  // Set course ID
+    		
+    		try (ResultSet rs = pstmt.executeQuery()) {
+    			if (rs.next()) {
+    				int count = rs.getInt(1);
+    				exists = (count > 0); // If count is greater than 0, the course ID exists for the user
+    			}
+    		}
+    	} catch (SQLException e) {
+    		e.printStackTrace(); // Handle exceptions properly in your application
+    	}
+    	
+    	return exists; // Return true if course ID exists for the user, false otherwise
+    }
+    
+    public static void insertRatingAndComment(int studentId, int courseId, int rate, String comment, LocalDate date) throws SQLException {
+        String query = "INSERT INTO commentrate (student_ID, course_ID, Rate, comment, date) VALUES (?, ?, ?, ?, ?)";
+        
+        try (Connection connection = DatabaseOperations.getConnection(); 
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+             
+            preparedStatement.setInt(1, studentId);
+            preparedStatement.setInt(2, courseId);
+            preparedStatement.setInt(3, rate);
+            preparedStatement.setString(4, comment);
+            preparedStatement.setObject(5, date);
+            
+            preparedStatement.executeUpdate();
+            System.out.println("Rating and comment inserted successfully.");
+        } catch (SQLException e) {
+            throw new SQLException("Error while inserting rating and comment: " + e.getMessage(), e);
+        }
     }
 
 }

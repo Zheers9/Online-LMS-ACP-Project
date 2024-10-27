@@ -73,7 +73,12 @@ public class CourseCategory{
 	                    System.out.println("An error occurred while returning back: " + e.getMessage());
 	                }
 	            } else {
-	                CateShow.show(categories[ch - 1]);
+	                try {
+						CateShow.show(categories[ch - 1]);
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 	            }
 	        });
 	    }
@@ -90,6 +95,7 @@ public class CourseCategory{
     		StudentDashboard.mainStudentView();
     	else if (roleID == 2)
     		instructor.mainInstructorView();
+    	
     		
     }
 

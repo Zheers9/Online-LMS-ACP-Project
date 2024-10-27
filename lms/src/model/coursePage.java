@@ -16,24 +16,45 @@ public class coursePage {
     private static int credit;
     private static String categoryName;
     private static Date date;
+    static int userId = SessionManager.getInstance().getUserId();
+    static String lightBlue = "\u001B[36m"; // ANSI code for light blue
+    static String resetColor = "\u001B[0m";
     
-	public coursePage() {
+    
+    
+	public coursePage(int courseID) {
+		this.id =  courseID;
+		
 		scanner = new Scanner(System.in);
 	}
 	
-	public static void view() throws SQLException {
+	public void CourseInfo(String title, String description, int credit, String categoryName) {
+        this.title = title;
+        this.description = description;
+        this.credit = credit;
+        this.categoryName = categoryName;
+    }
+	
+	public static void view(int course) throws SQLException {
+		//display info
+		CourseOps DB = new CourseOps();
+		DB.getCourseInfo(id);
+		
+		
 		System.out.println();
-		System.out.println(title + " ,"+id);
-		rate();
-		System.out.println("\n" + categoryName + "\n" + description + "\n credit : " + credit);
+		System.out.println(lightBlue + title + resetColor+ " ,"+id);
+		//rateComment.averageRate(id);
+		System.out.println("\n" + categoryName + "\n" + description + "\ncredit : " + credit);
 		
-		if(1==1) 
-			System.out.println("1- start learning");
-		else if( 2==2)
-			System.out.println("1- enroll course");
 		
-		System.out.println("\n2- rate & comment");
+		if(DB.isStudentEnroll(userId,id)) 
+			System.out.println(lightBlue + "1" + resetColor +"| Start ");
+		else
+			System.out.println(lightBlue + "1" + resetColor +"| Enroll ");
 		
+		System.out.println(lightBlue + "2" + resetColor +"| comment & rate ");
+		UserRatingAndCommenting rateComment = new UserRatingAndCommenting(id);
+		//handle user choice
 		boolean isValidChoice = false;
 		while (!isValidChoice) {
             System.out.print("Enter your choice (1,2): ");
@@ -66,14 +87,16 @@ public class coursePage {
     	
         switch (choice) {
             case 1 -> {
-            	if(v)
-                	System.out.println("ss");
-                else 
-                	System.out.println("en");
+            	 if (v) {
+                       
+                 } else {
+                       
+                 }
                 return true;
             }
             case 2 -> {
-            	UserRatingAndCommenting rateComment = new UserRatingAndCommenting();
+            	UserRatingAndCommenting rateComment = new UserRatingAndCommenting(id);
+            	
                 return true;
             }
             case 3 -> {
