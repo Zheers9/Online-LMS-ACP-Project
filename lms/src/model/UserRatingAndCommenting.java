@@ -18,7 +18,10 @@ public class UserRatingAndCommenting {
     static int StudentId = SessionManager.getInstance().getUserId();
     static int courseId;
     static Scanner scanner;
-    
+  
+    public UserRatingAndCommenting() {
+    	
+    }
   public UserRatingAndCommenting(int id) throws SQLException {
 	this.courseId = id;
     scanner = new Scanner(System.in);
@@ -120,7 +123,7 @@ public class UserRatingAndCommenting {
 	    }
 	    CourseOps db = new CourseOps();
 	    db.insertRatingAndComment(StudentId, courseId,Rate, comment,currentDate);
-	    coursePage back = new coursePage(courseId);
+	    CoursePage back = new CoursePage(courseId);
 	    
 	    
 	    

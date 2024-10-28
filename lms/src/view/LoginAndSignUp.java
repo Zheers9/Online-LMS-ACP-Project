@@ -156,15 +156,26 @@ public class LoginAndSignUp {
         }
 
         // Validate email format
+        DatabaseOperations DBOps = new DatabaseOperations();
         while (true) {
             System.out.print("Enter your email: ");
             email = scanner.nextLine();
+            
+            // Check if the email format is valid
             if (email.matches("^[\\w.-]+@[a-zA-Z\\d.-]+\\.[a-zA-Z]{2,6}$")) {
-                break; // Exit the loop if the email is valid
+                // Check if the email is already taken
+                if (!DBOps.isEmailTaken(email)) {
+                    break; // Exit the loop if the email is valid and not taken
+                } else {
+                    // Print error message and ask for email again
+                    System.err.println("The email is already taken.\n");
+                }
             } else {
-                System.out.println("Invalid email. Please enter a valid email address.");
+                // Print invalid email message and ask for email again
+                System.out.println("Invalid email. Please enter a valid email address.\n");
             }
         }
+
 
         // Validate password (at least 8 characters, one letter, one digit, and one special character)
         while (true) {

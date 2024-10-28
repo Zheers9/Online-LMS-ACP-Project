@@ -14,9 +14,15 @@ public class CateShow {
 
     public static void show(String catName) throws SQLException {
         System.out.println("| " + catName + ":");
-        
-        List<CourseInfo> latestCourses = CourseOps.getCoursesByCategoryName(catName);
-        latestCourses.forEach(System.out::println);
+        if(catName.equalsIgnoreCase("ALL")) {
+        	 List<CourseInfo> getCourses = CourseOps.getCourses();
+        	 getCourses.forEach(System.out::println);
+        	
+        }else {
+        	 List<CourseInfo> latestCourses = CourseOps.getCoursesByCategoryName(catName);
+             latestCourses.forEach(System.out::println);
+        }
+       
         HandleChoice handler = new HandleChoice();
         handler.courseChoice();
     }

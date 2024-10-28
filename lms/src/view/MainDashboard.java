@@ -1,6 +1,7 @@
 package view;
 
 import java.sql.SQLException;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -10,8 +11,9 @@ import control.DatabaseOperations;
 import model.CateShow;
 import model.CourseCategory;
 import model.CourseInfo;
+import model.CoursePage;
 import model.SessionManager;
-import model.coursePage;
+import model.CoursePage;
 
 public class MainDashboard {
 	private static Scanner scanner;
@@ -122,7 +124,7 @@ public class MainDashboard {
 			StudentDashboard view = new StudentDashboard();
 			view.mainStudentView();
     	}else {
-    		coursePage course = new coursePage(choice);  // Assuming CoursePage has a constructor that takes choice as an argument
+    		CoursePage course = new CoursePage(choice);  // Assuming CoursePage has a constructor that takes choice as an argument
             course.view(choice);  // Assuming view method in CoursePage accepts an argument
             
     	}

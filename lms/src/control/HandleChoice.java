@@ -1,11 +1,13 @@
 package control;
 
 import java.sql.SQLException;
+
 import java.util.Optional;
 import java.util.Scanner;
 
+import model.CoursePage;
 import model.SessionManager;
-import model.coursePage;
+import model.CoursePage;
 import view.InstructorDashboard;
 import view.StudentDashboard;
 
@@ -56,7 +58,7 @@ public class HandleChoice {
     	}else {
     		CourseOps CourseDB = new CourseOps();
     		CourseDB.getCourseInfo(choice);
-    		coursePage course = new coursePage(choice);  // Assuming CoursePage has a constructor that takes choice as an argument
+    		CoursePage course = new CoursePage(choice);  // Assuming CoursePage has a constructor that takes choice as an argument
             course.view(choice);  // Assuming view method in CoursePage accepts an argument
             
     	} // Assuming view method in CoursePage accepts an argument
