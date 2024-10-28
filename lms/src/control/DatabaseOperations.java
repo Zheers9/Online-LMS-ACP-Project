@@ -16,25 +16,29 @@ import java.sql.ResultSet;
 public class DatabaseOperations {
     private final static String URL = "jdbc:mysql://localhost:3306/lms";
     private final static String username = "root";
-    private static String password = "123456";
+    private static String password = "";
     
     private static Connection connect ;
     private static Statement statement ;
     
     
-    public static void executeQuery(String query) { 
+    public static ResultSet executeQuery(String query) {
+        ResultSet resultSet = null;  
         try {
-        	Connection conn = getConnection();
-            statement = connect.createStatement();
-            statement.executeQuery(query);
+            Connection conn = getConnection();  
+            Statement statement = conn.createStatement();
+            resultSet = statement.executeQuery(query);   
+
             
-            statement.close();
-            connect.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } 
-    } 
+        }
+        return resultSet;   
+    }
+
  
+    
+
     // Insert, Delete, Update
     public static void updateData(String query) {
         try {
@@ -65,7 +69,7 @@ public class DatabaseOperations {
     
     
     
-    public boolean checkEmailAndPassword(String email, String password) {
+    public static boolean checkEmailAndPassword(String email, String password) {
         String query = "SELECT password,user_ID FROM user WHERE email = ?";
         
         
@@ -142,7 +146,7 @@ public class DatabaseOperations {
     }
     
     
-    public int getRoleByEmail(String email) throws SQLException {
+    public static int getRoleByEmail(String email) throws SQLException {
         int id = -1; // Initialize with -1 to indicate "not found" or error
         String query = "SELECT role FROM user WHERE email = ?";
         
@@ -156,6 +160,30 @@ public class DatabaseOperations {
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     id = rs.getInt("role"); // Get the id from the result set
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle SQL exception (you can log it or throw it further)
+        }
+
+        return id; // Return the id (or -1 if not found)
+    }
+    
+    public static int getRoleByID(int ID) throws SQLException {
+        int id = -1; // Initialize with -1 to indicate "not found" or error
+        String query = "SELECT role FROM user WHERE user_ID = ?";
+        
+        try (Connection conn = getConnection(); // Assuming you have a method to get a connection
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            // Set the email parameter in the prepared statement
+            pstmt.setInt(1, ID);
+
+            // Execute the query and process the result
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    id = rs.getInt("role"); // Get the id from the result set
+                    return id;
                 }
             }
         } catch (SQLException e) {
@@ -345,6 +373,31 @@ public class DatabaseOperations {
 
         // Return the correct result
         return isPasswordChanged;
+    }
+    
+ // Method to delete a user account based on user ID
+    public static boolean deleteAccount(int userId) {
+        String query = "DELETE FROM user WHERE user_ID = ?"; // SQL delete query
+        boolean isDeleted = false;
+
+        try (Connection conn = DatabaseOperations.getConnection(); // Assume this method gets the DB connection
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            // Set the user ID in the query
+            pstmt.setInt(1, userId);
+
+            // Execute the delete operation
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                isDeleted = true;  // Account was successfully deleted
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle SQL exceptions
+        }
+
+        return isDeleted; // Return whether the account was successfully deleted
     }
 
 

@@ -1,11 +1,13 @@
 package model;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
 import control.CourseOps;
 import control.DatabaseOperations;
+import view.LoginAndSignUp;
 import view.MainDashboard;
 
 public class EditAcc {
@@ -18,7 +20,7 @@ public class EditAcc {
     public EditAcc() {
     	scanner = new Scanner(System.in);
     }
-	public static void EditAccountPage() {
+	public static void EditAccountPage() throws SQLException {
 		
 		
 		System.out.println("\n👤What do you want to change, " + name);
@@ -27,6 +29,8 @@ public class EditAcc {
 		System.out.println(lightBlue + "2" + resetColor +"| Email ");
 		System.out.println(lightBlue + "3" + resetColor +"| Password ");
 		System.out.println(lightBlue + "4" + resetColor +"| Field ");
+		System.out.println(lightBlue + "5" + resetColor +"| Delet account ");
+		
 		
 		boolean isValidChoice = false;
 		while (!isValidChoice) {
@@ -51,7 +55,7 @@ public class EditAcc {
         }
     }
 
-    private static boolean handleChoice(int choice) {
+    private static boolean handleChoice(int choice) throws SQLException {
     	DatabaseOperations DB =  new DatabaseOperations();
     	
     	AccInfromation acc =  new AccInfromation();
@@ -73,6 +77,10 @@ public class EditAcc {
             	chanegField();
             	return true;
             }
+            case 5 -> {
+            	Delet();
+            	return true;
+            }
             
             default -> {
                 System.out.println("Invalid choice, please select between 1 and 4.");
@@ -83,7 +91,48 @@ public class EditAcc {
         
     }
     
-    public static void changeName() {
+    public static void Delet() throws SQLException {
+    	boolean isAccDelet = false;
+        Scanner scanner = new Scanner(System.in);
+        
+        // Get the user's current name
+        int userId = SessionManager.getInstance().getUserId();
+        String currentName = DBOps.getColumnById("name",userId);
+        
+        while (!isAccDelet) {
+            
+            System.out.print("Are you sure want to Delete your account y/n: ");
+            
+            // Capture the new name from the user
+            String checkAgain = scanner.nextLine();
+            
+            // Validate the new name (only letters and spaces allowed)
+            if (checkAgain.equalsIgnoreCase("y")) {
+                // Update the name in the database
+                boolean isUpdated = DBOps.deleteAccount(userId);
+                
+                if (isUpdated) {
+                    // If update is successful, fetch the updated name
+                    
+                    System.out.println("\nYour account has been delete succufully");
+                    LoginAndSignUp starterPage = new LoginAndSignUp();
+                    starterPage.start();
+                    isAccDelet = true;
+                } else {
+                    System.out.println("An error occurred while Deleting your account, try again later.");
+                }
+            } else {
+                // Inform the user about invalid input
+                System.out.println("Invalid choice, please enter y/n");
+            }
+        }
+        
+        AccInfromation acc = new AccInfromation();
+        DBOps.getUserInfo(SessionManager.getInstance().getUserId());
+        acc.InfoShow();
+        acc.editAcc();
+    }
+    public static void changeName() throws SQLException {
         boolean isNameChanged = false;
         Scanner scanner = new Scanner(System.in);
         
@@ -124,7 +173,7 @@ public class EditAcc {
         
     }
 
-    public static void chanegEmail() {
+    public static void chanegEmail() throws SQLException {
     	boolean isNameChanged = false;
         Scanner scanner = new Scanner(System.in);
         
@@ -198,7 +247,7 @@ public class EditAcc {
         }
     }
 
-    public static void chanegField() {
+    public static void chanegField() throws SQLException {
     	boolean isNameChanged = false;
         Scanner scanner = new Scanner(System.in);
         

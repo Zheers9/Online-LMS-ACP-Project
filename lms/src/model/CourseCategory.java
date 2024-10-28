@@ -1,7 +1,12 @@
 package model;
 
+import java.sql.SQLException;
 import java.util.Optional;
 import java.util.Scanner;
+
+import control.DatabaseOperations;
+import view.InstructorDashboard;
+import view.StudentDashboard;
 
 public class CourseCategory{
 	private static Scanner scanner;
@@ -53,15 +58,39 @@ public class CourseCategory{
 	
 	
 	// Select category that user wants
-    public static void selectCategory() {
-        Optional<Integer> choice = Optional.empty();
+	public static void selectCategory() {
+	    Optional<Integer> choice = Optional.empty();
 
-        while (choice.isEmpty()) {
-            System.out.print("Please select a category (0 to see all): ");
-            choice = readValidInput();
-            
-            choice.ifPresent(ch -> CateShow.show(ch == 0 ? "ALL" : categories[ch - 1]));
-        }
+	    while (choice.isEmpty()) {
+	        System.out.print("Please select a category (0 to return): ");
+	        choice = readValidInput();
+	        
+	        choice.ifPresent(ch -> {
+	            if (ch == 0) {
+	                try {
+	                    returnBack();
+	                } catch (SQLException e) {
+	                    System.out.println("An error occurred while returning back: " + e.getMessage());
+	                }
+	            } else {
+	                CateShow.show(categories[ch - 1]);
+	            }
+	        });
+	    }
+	}
+    
+    public static void returnBack() throws SQLException {
+    	int userId = SessionManager.getInstance().getUserId();
+    	DatabaseOperations DB = new DatabaseOperations();
+    	StudentDashboard student = new StudentDashboard();
+    	InstructorDashboard instructor = new InstructorDashboard();
+    	int roleID = DB.getRoleByID(userId);
+    	
+    	if(roleID == 1)
+    		StudentDashboard.mainStudentView();
+    	else if (roleID == 2)
+    		instructor.mainInstructorView();
+    		
     }
 
     // Read user input and return valid category number

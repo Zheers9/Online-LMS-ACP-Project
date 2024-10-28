@@ -1,5 +1,6 @@
 package model;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +27,7 @@ public class ManageCourses {
 		scanner = new Scanner(System.in);// TODO Auto-generated constructor stub
 	}
 	
-	public static void view() {
+	public static void view() throws SQLException {
 		System.out.println(LIGHT_BLUE + "1" + RESET_COLOR + "| My courses");
         System.out.println(LIGHT_BLUE + "2" + RESET_COLOR + "| Create Courses");
         System.out.println(LIGHT_BLUE + "2" + RESET_COLOR + "| <- return");
@@ -54,7 +55,7 @@ public class ManageCourses {
         }
     }
 
-    private static boolean handleChoice(int choice) {
+    private static boolean handleChoice(int choice) throws SQLException {
     	myAccount acc = new myAccount();
         switch (choice) {
             case 1 -> {
@@ -81,7 +82,7 @@ public class ManageCourses {
         }
     }
     
-    public static void coursesShow() {
+    public static void coursesShow() throws SQLException {
 	
 	    List<CourseInfo> latestCourses = CourseOps.getCoursesInstructor(); // Retrieve courses
 
@@ -102,7 +103,7 @@ public class ManageCourses {
     	
     }
     
-public static void editAcc() {
+public static void editAcc() throws SQLException {
 		
 		
 		boolean isValidChoice = false;
@@ -129,7 +130,7 @@ public static void editAcc() {
         }
     }
 
-    private static boolean handleChoice(String choice) {
+    private static boolean handleChoice(String choice) throws SQLException {
     	DatabaseOperations DB =  new DatabaseOperations();
     	
     	AccInfromation acc =  new AccInfromation();
@@ -152,7 +153,7 @@ public static void editAcc() {
         }
     }
 
-    public static void checkpass() {
+    public static void checkpass() throws SQLException {
     	boolean isCorrect = false;
     	EditAcc edit = new EditAcc();
 		while (!isCorrect) {
@@ -172,7 +173,11 @@ public static void editAcc() {
 		
     }
     
-public static void EditCoursePage() {
+    public static void getCourseID() {
+    	
+    }
+    
+    	public static void EditCoursePage() throws SQLException {
 		
 		
 		System.out.println("\n👤What do you want to change, " + name);
@@ -209,7 +214,7 @@ public static void EditCoursePage() {
 		
 	}
 
-	private static boolean handleEditChoice(int choice,int ID) {
+	private static boolean handleEditChoice(int choice,int ID) throws SQLException {
 		DatabaseOperations DB =  new DatabaseOperations();
 		int CourseID =  ID;
 		AccInfromation acc =  new AccInfromation();
@@ -238,7 +243,7 @@ public static void EditCoursePage() {
 	}
 	
 	
-	public static void changeTitle() {
+	public static void changeTitle() throws SQLException {
         boolean isNameChanged = false;
         Scanner scanner = new Scanner(System.in);
         
@@ -279,7 +284,7 @@ public static void EditCoursePage() {
         
     }
 	
-	public static void CreateCourse() {
+	public static void CreateCourse() throws SQLException {
 		Scanner scanner = new Scanner(System.in);
         String Title, Description, Catagory;
         int Credit;

@@ -1,10 +1,8 @@
 package view;
 
+import java.sql.SQLException;
 import java.util.Optional;
 import java.util.Scanner;
-
-import model.CateShow;
-import model.CourseInfo;
 import model.myAccount;
 
 public class StudentDashboard {
@@ -13,14 +11,12 @@ public class StudentDashboard {
     static Scanner scanner;
     public StudentDashboard() {
     	scanner = new Scanner(System.in);
+    	
     }
     
-    public static void mainStudentView() {
+    public static void mainStudentView() throws SQLException {
         System.out.println("\n| Online Learning Management System |");
-        displayMenuOptions();
-        
-        MainDashboard mainDashboard = new MainDashboard();
-        mainDashboard.MainView();
+        displayMenuOptions(); MainDashboard.MainView();
 
         boolean isValidChoice = false;
 
@@ -30,7 +26,7 @@ public class StudentDashboard {
             Optional<Integer> choice = getUserInput();
 
             if (choice.isPresent()) {
-                isValidChoice = handleChoice(choice.get(), mainDashboard);
+                isValidChoice = handleChoice(choice.get());
             } else {
                 System.out.println("Invalid input. Please enter a number between 1 and 7.");
             }
@@ -54,11 +50,11 @@ public class StudentDashboard {
         }
     }
 
-    private static boolean handleChoice(int choice, MainDashboard mainDashboard) {
-    	myAccount acc = new myAccount();
+    private static boolean handleChoice(int choice) throws SQLException {
+    	
         switch (choice) {
             case 1 -> {
-                acc.myAccountPage();
+				myAccount.myAccountPage();
                 return true;
             }
             case 2 -> {
@@ -66,11 +62,11 @@ public class StudentDashboard {
                 return true;
             }
             case 3 -> {
-                
+            	MainDashboard.searchThroughCourses();
                 return true;
             }
             case 4, 5, 6, 7 -> {
-                mainDashboard.choice(choice);
+				MainDashboard.choice(choice);
                 return true;
             }
             default -> {

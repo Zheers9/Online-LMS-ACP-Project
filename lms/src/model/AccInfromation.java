@@ -1,5 +1,6 @@
 package model;
 
+import java.sql.SQLException;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -35,7 +36,7 @@ public class AccInfromation {
        
 	}
 	
-	public static void editAcc() {
+	public static void editAcc() throws SQLException {
 		
 		
 		boolean isValidChoice = false;
@@ -62,7 +63,7 @@ public class AccInfromation {
         }
     }
 
-    private static boolean handleChoice(String choice) {
+    private static boolean handleChoice(String choice) throws SQLException {
     	DatabaseOperations DB =  new DatabaseOperations();
     	
     	AccInfromation acc =  new AccInfromation();
@@ -85,7 +86,7 @@ public class AccInfromation {
         }
     }
 
-    public static void checkpass() {
+    public static void checkpass() throws SQLException {
     	boolean isCorrect = false;
     	EditAcc edit = new EditAcc();
 		while (!isCorrect) {

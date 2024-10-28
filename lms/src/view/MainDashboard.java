@@ -1,9 +1,12 @@
 package view;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
+import control.ANSIColor;
 import control.CourseOps;
+import control.DatabaseOperations;
 import model.CateShow;
 import model.CourseCategory;
 import model.CourseInfo;
@@ -13,6 +16,7 @@ public class MainDashboard {
 	private static Scanner scanner;
 	static String lightBlue = "\u001B[36m"; // ANSI code for light blue
     static String resetColor = "\u001B[0m";
+    static DatabaseOperations DB;
 	
 	public MainDashboard() {
 		scanner = new Scanner(System.in);
@@ -29,7 +33,7 @@ public class MainDashboard {
 			
 	}
 	
-	public static void choice(int choice) {
+	public static void choice(int choice) throws SQLException {
 		List<CourseInfo> latestCourses = CourseOps.getLatestCourses();
 		CourseCategory Category =  new CourseCategory();
 		
@@ -41,6 +45,21 @@ public class MainDashboard {
 	                System.out.println(CourseInfo);
 	                
 	            }
+	        	System.out.print("\n<- return ?: ");
+	    		Scanner scanner = new Scanner(System.in);
+	    		String y = scanner.next();
+	    		int userId = SessionManager.getInstance().getUserId();
+	    		if(y.equalsIgnoreCase("y")) {
+	    			if(DB.getRoleByID(userId) == 1) {
+	    				StudentDashboard view = new StudentDashboard();
+		    			view.mainStudentView();
+	    			}else {
+	    				InstructorDashboard view = new InstructorDashboard();
+		    			view.mainInstructorView();
+	    			}
+	    			StudentDashboard view = new StudentDashboard();
+	    			view.mainStudentView();
+	    		}
 	        	valid = true;
 	        }
 	        case 5 -> {
@@ -60,5 +79,13 @@ public class MainDashboard {
 		}
 	
   
+	}
+
+	public static void searchThroughCourses() {
+    	System.out.print(ANSIColor.PURPLE +"Search for courses: "+ANSIColor.RESET);
+    	String userInput=  new Scanner(System.in).next();
+    	List<CourseInfo> searchedCourse = CourseOps.searchCourses(userInput);
+    	for (CourseInfo CourseInfo : searchedCourse)  System.out.println(CourseInfo);
+		
 	}
 }

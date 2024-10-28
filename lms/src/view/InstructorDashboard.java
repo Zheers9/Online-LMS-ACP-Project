@@ -1,5 +1,6 @@
 package view;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -27,7 +28,7 @@ public class InstructorDashboard {
     	scanner = new Scanner(System.in);
     }
     
-    public static void mainInstructorView() {
+    public static void mainInstructorView() throws SQLException {
         System.out.println("\n| Online Learning Management System |");
         displayMenuOptions();
         
@@ -66,7 +67,7 @@ public class InstructorDashboard {
         }
     }
 
-    private static boolean handleChoice(int choice, MainDashboard mainDashboard) {
+    private static boolean handleChoice(int choice, MainDashboard mainDashboard) throws SQLException {
     	myAccount acc = new myAccount();
         switch (choice) {
             case 1 -> {
@@ -79,7 +80,7 @@ public class InstructorDashboard {
                 return true;
             }
             case 3 -> {
-                
+                MainDashboard.searchThroughCourses();
                 return true;
             }
             case 4, 5, 6, 7 -> {
