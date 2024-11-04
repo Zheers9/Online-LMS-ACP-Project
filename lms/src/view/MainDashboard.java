@@ -1,104 +1,75 @@
 package view;
 
 import java.sql.SQLException;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
+import control.ANSIColor;
 import control.CourseOps;
 import control.DatabaseOperations;
+import control.HandleChoice;
 import model.CateShow;
 import model.CourseCategory;
 import model.CourseInfo;
 import model.CoursePage;
 import model.SessionManager;
-import model.CoursePage;
 
 public class MainDashboard {
-	private static Scanner scanner;
-	static String lightBlue = "\u001B[36m"; // ANSI code for light blue
-    static String resetColor = "\u001B[0m";
-    static DatabaseOperations DB;
-    static int userId = SessionManager.getInstance().getUserId();
-	
-	public MainDashboard() {
-		scanner = new Scanner(System.in);
-	}
-	
-	public static void MainView() {
-		
-		System.out.println(lightBlue + "\n3" + resetColor +"| Search: 🔍");
-		System.out.println(lightBlue + "4" + resetColor +"| new course" );
-		System.out.println(lightBlue + "5" + resetColor +"| Category");
-		System.out.println(lightBlue + "6" + resetColor +"| Show all");
-		System.out.println(lightBlue + "7" + resetColor +"| EXIT");
-		
-			
-	}
-	
-	public static void choice(int choice) throws SQLException {
-		List<CourseInfo> latestCourses = CourseOps.getLatestCourses();
-		CourseCategory Category =  new CourseCategory();
-		
-		Boolean valid = false;
-	
-		switch (choice) {
-	        case 4 -> {
-	        	for (CourseInfo CourseInfo : latestCourses) {
-	                System.out.println(CourseInfo);
-	            }
-	        	courseChoice();
-	        	
-	        }
-	        case 5 -> {
-	        	Category.Category();
-	        	courseChoice();
-	        }
-	        case 6 -> {
-	        	CateShow.show("ALL");
-	        	valid = true;
-	        }
-	        case 7 -> {
-	        	System.out.println("Good bye, don't stop learning, we waiting for you boss");
-	        	System.exit(0);
-	        	valid = true;
-	        }
-	        default -> System.out.println("Invalid choice, please choice 1,2");
-		}
-	
-  
-	}
-	
-	public static void returnBack() throws SQLException {
-		System.out.print("\n<- return ?: ");
-		Scanner scanner = new Scanner(System.in);
-		String y = scanner.next();
-		userId = SessionManager.getInstance().getUserId();
-		if(y.equalsIgnoreCase("y")) {
-			if(DB.getRoleByID(userId) == 1) {
-				StudentDashboard view = new StudentDashboard();
-    			view.mainStudentView();
-			}else {
-				InstructorDashboard view = new InstructorDashboard();
-    			view.mainInstructorView();
-			}
-			StudentDashboard view = new StudentDashboard();
-			view.mainStudentView();
-		}
-    	
-	}
-	
-	public static void courseChoice() throws SQLException {
-        boolean isValidChoice = false;
-        while (!isValidChoice) {
-            System.out.print("Choose course by ID: ");
-            Optional<Integer> choice = getUserInput();
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final DatabaseOperations DB = new DatabaseOperations();
+    private static final int userId = SessionManager.getInstance().getUserId();
+    private static final HandleChoice courseChoiceHandler = new HandleChoice();
 
-            if (choice.isPresent()) {
-                isValidChoice = handleChoice(choice.get());
+    public MainDashboard() {
+    }
+
+    public static void mainView() {
+        System.out.println(ANSIColor.CYAN + "\n3" + ANSIColor.RESET + " | Search: 🔍");
+        System.out.println(ANSIColor.CYAN + "4" + ANSIColor.RESET + " | New Course");
+        System.out.println(ANSIColor.CYAN + "5" + ANSIColor.RESET + " | Category");
+        System.out.println(ANSIColor.CYAN + "6" + ANSIColor.RESET + " | Show All");
+        System.out.println(ANSIColor.CYAN + "7" + ANSIColor.RESET + " | EXIT");
+    }
+
+    public static void processChoice(int choice) throws SQLException {
+        List<CourseInfo> latestCourses = CourseOps.getLatestCourses();
+        CourseCategory category = new CourseCategory();
+
+        switch (choice) {
+            case 4 -> {
+                for (CourseInfo courseInfo : latestCourses) {
+                    System.out.println(courseInfo);
+                }
+                courseChoiceHandler.courseChoice();
+            }
+            case 5 -> {
+                category.showCategory();
+                courseChoiceHandler.courseChoice();
+            }
+            case 6 -> {
+                CateShow.show("ALL");
+            }
+            case 7 -> {
+                System.out.println("Goodbye! Don't stop learning. We're waiting for you, boss.");
+                System.exit(0);
+            }
+            default -> System.out.println("Invalid choice, please select 1-7.");
+        }
+    }
+
+    public static void returnBack() throws SQLException {
+        System.out.print("\n<- Return (y/n)?: ");
+        String response = scanner.next();
+
+        if (response.equalsIgnoreCase("y")) {
+            int roleId = DB.getRoleByID(userId);
+            if (roleId == 1) {
+                StudentDashboard studentView = new StudentDashboard();
+                studentView.mainStudentView();
             } else {
-                System.out.println("Invalid input. Please enter a Course ID.");
+                InstructorDashboard instructorView = new InstructorDashboard();
+                instructorView.mainInstructorView();
             }
         }
     }
@@ -113,23 +84,19 @@ public class MainDashboard {
     }
 
     private static boolean handleChoice(int choice) throws SQLException {
-    	if(choice == 0 ) {
-    		if(DB.getRoleByID(userId) == 1) {
-				StudentDashboard view = new StudentDashboard();
-    			view.mainStudentView();
-			}else {
-				InstructorDashboard view = new InstructorDashboard();
-    			view.mainInstructorView();
-			}
-			StudentDashboard view = new StudentDashboard();
-			view.mainStudentView();
-    	}else {
-    		CoursePage course = new CoursePage(choice);  // Assuming CoursePage has a constructor that takes choice as an argument
-            course.view(choice);  // Assuming view method in CoursePage accepts an argument
-            
-    	}
-    	return true;
-    		
-        
+        if (choice == 0) {
+            int roleId = DB.getRoleByID(userId);
+            if (roleId == 1) {
+                StudentDashboard studentView = new StudentDashboard();
+                studentView.mainStudentView();
+            } else {
+                InstructorDashboard instructorView = new InstructorDashboard();
+                instructorView.mainInstructorView();
+            }
+        } else {
+            CoursePage coursePage = new CoursePage(choice);
+            coursePage.view(choice);
+        }
+        return true;
     }
 }

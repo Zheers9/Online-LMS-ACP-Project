@@ -3,25 +3,24 @@ package view;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.Scanner;
-
-import model.CateShow;
-import model.CourseInfo;
-import model.myAccount;
+import control.ANSIColor;
+import model.MyAccount;
+import model.SessionManager;
 
 public class StudentDashboard {
-	static final String LIGHT_BLUE = "\u001B[36m"; // ANSI code for light blue
-    static final String RESET_COLOR = "\u001B[0m";
-    static Scanner scanner;
+    private static Scanner scanner;
+
     public StudentDashboard() {
-    	scanner = new Scanner(System.in);
+        scanner = new Scanner(System.in);
     }
-    
+
     public static void mainStudentView() throws SQLException {
+    	System.out.println(SessionManager.getInstance().getUserId());
         System.out.println("\n| Online Learning Management System |");
         displayMenuOptions();
-        
+
         MainDashboard mainDashboard = new MainDashboard();
-        mainDashboard.MainView();
+        mainDashboard.mainView();
 
         boolean isValidChoice = false;
 
@@ -31,7 +30,7 @@ public class StudentDashboard {
             Optional<Integer> choice = getUserInput();
 
             if (choice.isPresent()) {
-                isValidChoice = handleChoice(choice.get(), mainDashboard);
+                isValidChoice = processChoice(choice.get(), mainDashboard);
             } else {
                 System.out.println("Invalid input. Please enter a number between 1 and 7.");
             }
@@ -39,10 +38,8 @@ public class StudentDashboard {
     }
 
     private static void displayMenuOptions() {
-        System.out.println(LIGHT_BLUE + "1" + RESET_COLOR + "| 👤My Account");
-        System.out.println(LIGHT_BLUE + "2" + RESET_COLOR + "| My Courses");
-        
-        
+        System.out.println(ANSIColor.CYAN + "1" + ANSIColor.WHITE + " | 👤 My Account");
+        System.out.println(ANSIColor.CYAN + "2" + ANSIColor.WHITE + " | My Courses");
     }
 
     private static Optional<Integer> getUserInput() {
@@ -55,23 +52,19 @@ public class StudentDashboard {
         }
     }
 
-    private static boolean handleChoice(int choice, MainDashboard mainDashboard) throws SQLException {
-    	myAccount acc = new myAccount();
+    private static boolean processChoice(int choice, MainDashboard mainDashboard) throws SQLException {
+        MyAccount myAccount = new MyAccount();
         switch (choice) {
             case 1 -> {
-                acc.myAccountPage();
+                myAccount.myAccountPage();
                 return true;
             }
-            case 2 -> {
-                
-                return true;
-            }
-            case 3 -> {
-                
+            case 2, 3 -> {
+                // Placeholder for other cases to be handled here if needed.
                 return true;
             }
             case 4, 5, 6, 7 -> {
-                mainDashboard.choice(choice);
+                mainDashboard.processChoice(choice);
                 return true;
             }
             default -> {
@@ -81,4 +74,3 @@ public class StudentDashboard {
         }
     }
 }
-

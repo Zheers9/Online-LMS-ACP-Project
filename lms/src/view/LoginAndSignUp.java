@@ -1,228 +1,168 @@
 package view;
+
 import java.sql.SQLException;
-import java.util.Scanner;
 import java.util.Optional;
-
+import java.util.Scanner;
 import control.DatabaseOperations;
-import view.*;
-
 
 public class LoginAndSignUp {
-	String redText = "\u001B[31m";
+    static final String LIGHT_BLUE = "\u001B[36m";
     String resetText = "\u001B[0m";
-    private static final String String = null;
-	private Scanner scanner;
+    private Scanner scanner;
 
     public LoginAndSignUp() {
         scanner = new Scanner(System.in);
     }
 
     public void start() throws SQLException {
-    	System.out.println("Welcome to the Learning Management System!");
+        System.out.println("Welcome to the Learning Management System!");
         System.out.println("Please choose an option:");
-        System.out.println("1. Create Account");
-        System.out.println("2. Login");
-        
-        getUserChoice()
-            .ifPresentOrElse(
-                choice -> handleUserChoice(choice),
-                () -> {
-                     System.out.println("please choice 1,2");
-                }
+        System.out.println(LIGHT_BLUE + "1 |" + resetText + "Create Account");
+        System.out.println(LIGHT_BLUE + "2 |" + resetText + "Login");
+
+        do {
+            getUserChoice().ifPresentOrElse(
+                choice -> {
+                	try {
+						handleUserChoice(choice);
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                    return;
+                },
+                () -> System.out.println("Please choose 1 or 2")
             );
+        } while (true);
     }
-    
+
     private Optional<Integer> getUserChoice() {
         try {
-            int choice = Integer.parseInt(scanner.nextLine().trim()); // Read input and remove extra spaces
+            int choice = Integer.parseInt(scanner.nextLine().trim());
             return Optional.of(choice);
         } catch (NumberFormatException e) {
-            return Optional.empty(); // Return empty if input is not a valid number
+            return Optional.empty();
         }
     }
-    
-    private void handleUserChoice(int choice) {
-        try {
-            switch (choice) {
-                case 1 -> createAccount();
-                case 2 -> login();
-                default -> {
-                    System.out.println("invalid choice please try again");
-                    start(); // Restart the process for invalid option
-                }
+
+    private void handleUserChoice(int choice) throws SQLException {
+        switch (choice) {
+            case 1 -> displayCreateAccountMenu();
+            case 2 -> login();
+            default -> {
+                System.out.println("Invalid choice, please try again.");
+                start();
             }
-        } catch (SQLException e) {
-            System.err.println("Error processing your request: " + e.getMessage());
         }
     }
-    
-    private void createAccount() throws SQLException {
-    	String getInfo="""
-    			Select your role:
-    			1. Student
-    			2. Instructor
-    			3. Exite
-    			""";
-    	
-        System.out.println(getInfo);
+
+    private void displayCreateAccountMenu() throws SQLException {
+        System.out.println("""
+                Select your role:
+                1. Student
+                2. Instructor
+                3. Exit
+                """);
 
         int choice = scanner.nextInt();
         scanner.nextLine(); // Consume newline
 
-        if (choice == 1) {
-        	createAcc(choice);
-        } else if (choice == 2) {
-        	createAcc(choice);
-        } else if (choice==3) {
-        	System.out.println("bye bye");
-            System.exit(0); // Restart the account creation process
+        if (choice == 1 || choice == 2) {
+            createAcc(choice);
+        } else if (choice == 3) {
+            System.out.println("Goodbye!");
+            System.exit(0);
+        } else {
+            System.out.println("Please enter a valid choice (1-3).");
+            displayCreateAccountMenu();
         }
     }
 
     private void login() throws SQLException {
-        
-        
-        DatabaseOperations databaseOps =  new DatabaseOperations(); //query to check email,password is valid
-        int Attempt =  0;
-        int MaxAttempt =  5;
-        Boolean valid = false;
-        while(!valid && (MaxAttempt-Attempt) > 0) {
-        	System.out.println();
-        	System.out.print("Enter your email: ");
+        DatabaseOperations databaseOps = new DatabaseOperations();
+        int attempt = 0, maxAttempt = 5;
+        boolean valid = false;
+
+        while (!valid && (maxAttempt - attempt) > 0) {
+            System.out.print("\nEnter your email: ");
             String email = scanner.nextLine();
             System.out.print("Enter your password: ");
             String password = scanner.nextLine();
-            
-            
-        	if (databaseOps.checkEmailAndPassword(email, password)) {
-        		valid = true;
-                Optional<Integer> optionalId = Optional.ofNullable(databaseOps.getRoleByEmail(email));
 
+            if (databaseOps.checkEmailAndPassword(email, password)) {
+                valid = true;
+                Optional<Integer> optionalId = Optional.ofNullable(databaseOps.getRoleByEmail(email));
+                
                 optionalId.ifPresentOrElse(id -> {
-                    switch (id) {
-                        case 1 -> {
-                            StudentDashboard studentDashboard = new StudentDashboard();
-                            try {
-								studentDashboard.mainStudentView();
-							} catch (SQLException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+                    try {
+                        switch (id) {
+                            case 1 -> new StudentDashboard().mainStudentView();
+                            case 2 -> new InstructorDashboard().mainInstructorView();
+                            case 3 -> new AdminDashbord().mainAdminView();
+                            default -> System.out.println("Invalid user ID.");
                         }
-                        case 2 -> {
-                            InstructorDashboard instructorDashboard = new InstructorDashboard();
-                            try {
-								instructorDashboard.mainInstructorView();
-							} catch (SQLException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-                        }
-                        case 3 -> {
-                        	InstructorDashboard instructorDashboard = new InstructorDashboard();
-                            
-                        }
-                        default -> System.out.println("Invalid user ID.");
+                    } catch (SQLException e) {
+                        e.printStackTrace();
                     }
                 }, () -> System.out.println("ID not found for the given email."));
-                		 
             } else {
-            	 
-            	Attempt++;
-            	if( (MaxAttempt-Attempt) > 0)
-            		System.err.println("Invalid email or password, Please try again. " + (MaxAttempt-Attempt) +" Attempt is left");
-            	else
-            		System.err.println("Invalid email or password. Please try again later, No Attempt is left");
-            	
+                attempt++;
+                if ((maxAttempt - attempt) > 0) {
+                    System.err.println("Invalid email or password. " + (maxAttempt - attempt) + " attempts left.");
+                } else {
+                    System.err.println("No attempts left. Please try again later.");
+                }
             }
         }
-        
     }
 
-    private void createAcc(int role) throws SQLException {
-    	
-    	Scanner scanner = new Scanner(System.in);
+    protected void createAcc(int role) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+        DatabaseOperations dbOps = new DatabaseOperations();
         String name, email, pass, field;
 
-        // Validate name to contain only letters
+        // Validate name
         while (true) {
             System.out.print("Enter your name: ");
             name = scanner.nextLine();
-            if (name.matches("[a-zA-Z ]+")) {
-                break; // Exit the loop if the name is valid
-            } else {
-                System.out.println("Invalid name. Please enter a name containing only letters.");
-            }
+            if (name.matches("[a-zA-Z ]+")) break;
+            System.out.println("Invalid name. Please use letters only.");
         }
 
-        // Validate email format
-        DatabaseOperations DBOps = new DatabaseOperations();
+        // Validate email
         while (true) {
             System.out.print("Enter your email: ");
             email = scanner.nextLine();
-            
-            // Check if the email format is valid
-            if (email.matches("^[\\w.-]+@[a-zA-Z\\d.-]+\\.[a-zA-Z]{2,6}$")) {
-                // Check if the email is already taken
-                if (!DBOps.isEmailTaken(email)) {
-                    break; // Exit the loop if the email is valid and not taken
-                } else {
-                    // Print error message and ask for email again
-                    System.err.println("The email is already taken.\n");
-                }
-            } else {
-                // Print invalid email message and ask for email again
-                System.out.println("Invalid email. Please enter a valid email address.\n");
-            }
+            if (email.matches("^[\\w.-]+@[a-zA-Z\\d.-]+\\.[a-zA-Z]{2,6}$") && !dbOps.isEmailTaken(email)) break;
+            System.out.println("Invalid or taken email. Try again.");
         }
 
-
-        // Validate password (at least 8 characters, one letter, one digit, and one special character)
+        // Validate password
         while (true) {
             System.out.print("Enter your password: ");
             pass = scanner.nextLine();
-            if (pass.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")) {
-                break; // Exit the loop if the password is valid
-            } else {
-                System.out.println("Invalid password. It must contain at least 8 characters, one letter, one number, and one special character.");
-            }
+            if (pass.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")) break;
+            System.out.println("Invalid password. Must be at least 8 characters, with one letter, one number, and one special character.");
         }
 
-        // Validate field to start with a letter
+        // Validate field
         while (true) {
             System.out.print("Enter your field: ");
             field = scanner.nextLine();
-            if (field.matches("^[a-zA-Z].*")) {
-                break; // Exit the loop if the field starts with a letter
-            } else {
-                System.out.println("Invalid field. It must start with a letter.");
-            }
+            if (field.matches("^[a-zA-Z].*")) break;
+            System.out.println("Field must start with a letter.");
         }
-        
-        
-        
-        DatabaseOperations set =  new DatabaseOperations();
-        if (set.signup(name, email, pass, field, role)) {
-            switch (role) {
-                case 1 -> {
-                    StudentDashboard studentDashboard = new StudentDashboard();
-                    studentDashboard.mainStudentView();
-                }
-                case 2 -> {
-                	StudentDashboard studentDashboard = new StudentDashboard();
-                    studentDashboard.mainStudentView();
-                }
-                case 3 -> {
-                    InstructorDashboard instructorDashboard = new InstructorDashboard();
-                   
-                }
-                default -> System.out.println("Invalid user role.");
+
+        if (dbOps.signup(name, email, pass, field, role)) {
+            if (role == 1) {
+                new StudentDashboard().mainStudentView();
+            } else if (role == 2) {
+                new InstructorDashboard().mainInstructorView();
+            } else {
+                System.out.println("Invalid user role.");
             }
         } else {
             System.err.println("Sign-up failed. Please try again.");
         }
-
-    
-    } 
-    
+    }
 }

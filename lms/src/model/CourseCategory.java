@@ -36,7 +36,7 @@ public class CourseCategory{
 		return categories;
 	}
 	
-	public static void Category() {
+	public static void showCategory() {
 		
         System.out.println("| Category:");
         for (int i = 0; i < categories.length; i++) {

@@ -67,7 +67,7 @@ public class AccInfromation {
     	DatabaseOperations DB =  new DatabaseOperations();
     	
     	AccInfromation acc =  new AccInfromation();
-    	myAccount myAcc =  new myAccount();
+    	MyAccount myAcc =  new MyAccount();
     	
         switch (choice) {
             case "y" -> {

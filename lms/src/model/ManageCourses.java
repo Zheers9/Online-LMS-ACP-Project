@@ -56,7 +56,7 @@ public class ManageCourses {
     }
 
     private static boolean handleChoice(int choice) throws SQLException {
-    	myAccount acc = new myAccount();
+    	MyAccount acc = new MyAccount();
         switch (choice) {
             case 1 -> {
             	coursesShow();
@@ -134,7 +134,7 @@ public static void editAcc() throws SQLException {
     	DatabaseOperations DB =  new DatabaseOperations();
     	
     	AccInfromation acc =  new AccInfromation();
-    	myAccount myAcc =  new myAccount();
+    	MyAccount myAcc =  new MyAccount();
     	
         switch (choice) {
             case "y" -> {

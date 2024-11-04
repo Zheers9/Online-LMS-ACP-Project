@@ -2,10 +2,12 @@ package control;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 
 import model.AccInfromation;
 import model.SessionManager;
@@ -399,8 +401,59 @@ public class DatabaseOperations {
 
         return isDeleted; // Return whether the account was successfully deleted
     }
+    
+    public static boolean doesUserIdExist(int userId) {
+        String query = "SELECT COUNT(*) FROM user WHERE user_ID = ?";
+        
+        try (Connection conn = getConnection(); // Assume this method gets the DB connection
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
+             
+        	pstmt.setInt(1, userId);
+            ResultSet resultSet = pstmt.executeQuery();
+            
+            if (resultSet.next()) {
+                return resultSet.getInt(1) > 0; // If count is greater than 0, ID exists
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle any SQL exceptions
+        }
+        
+        return false; // ID does not exist
+    }
 
+    public static void addCredit(int userId, int creditToAdd) {
+        String updateQuery = "UPDATE user SET credit = credit + ? WHERE user_ID = ?";
+        String logQuery = "INSERT INTO credit (user_ID, credit, type, date) VALUES (?, ?, ?, ?)";
 
+        try (Connection connection = getConnection();
+             PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+             PreparedStatement logStatement = connection.prepareStatement(logQuery)) {
+
+            // Update user credit
+            updateStatement.setInt(1, creditToAdd);
+            updateStatement.setInt(2, userId);
+
+            int rowsAffected = updateStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                
+
+                // Log the credit addition
+                logStatement.setInt(1, userId);
+                logStatement.setInt(2, creditToAdd);
+                logStatement.setString(3, "add");
+                logStatement.setDate(4, Date.valueOf(LocalDate.now())); // Current date and time
+
+                logStatement.executeUpdate(); // Execute the log insert
+                
+            } else {
+                System.out.println("No user found with the specified User ID.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     
     public static Connection getConnection() throws SQLException {

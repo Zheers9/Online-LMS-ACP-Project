@@ -53,8 +53,7 @@ public class HandleChoice {
 				InstructorDashboard view = new InstructorDashboard();
     			view.mainInstructorView();
 			}
-			StudentDashboard view = new StudentDashboard();
-			view.mainStudentView();
+		
     	}else {
     		CourseOps CourseDB = new CourseOps();
     		CourseDB.getCourseInfo(choice);
