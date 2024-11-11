@@ -152,7 +152,7 @@ public class LoginAndSignUp {
             if (field.matches("^[a-zA-Z].*")) break;
             System.out.println("Field must start with a letter.");
         }
-
+        
         if (dbOps.signup(name, email, pass, field, role)) {
             if (role == 1) {
                 new StudentDashboard().mainStudentView();

@@ -101,7 +101,7 @@ public class DatabaseOperations {
     public boolean checkPassword(String password) {
     	String query = "SELECT password FROM user WHERE user_ID  = ?";
     	
-    	
+ 
     	
     	try (Connection conn = getConnection(); // Assume getConnection() method exists to establish a DB connection
     			PreparedStatement pstmt = conn.prepareStatement(query)) {
